@@ -11,6 +11,7 @@
   "author": "studentivan.ru",
   "license": "MIT",
   "devDependencies": {
+    "bemto.jade": "github:glebmachine/bemto",
     "extract-loader": "0.0.2",
     "file-loader": "^0.9.0",
     "html-loader": "^0.4.4",
