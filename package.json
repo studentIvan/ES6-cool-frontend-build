@@ -1,0 +1,24 @@
+{
+  "name": "highload-frontend",
+  "version": "1.0.0",
+  "description": "no description",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "webpack-dev-server --hot --colors --content-base build/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "studentivan.ru",
+  "license": "MIT",
+  "devDependencies": {
+    "extract-loader": "0.0.2",
+    "file-loader": "^0.9.0",
+    "html-loader": "^0.4.4",
+    "jshint": "^2.9.4",
+    "jshint-loader": "^0.8.3",
+    "pug": "^2.0.0-beta6",
+    "pug-html-loader": "^1.0.9",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
