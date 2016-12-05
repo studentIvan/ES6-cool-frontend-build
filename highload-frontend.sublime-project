@@ -7,7 +7,7 @@
             [
                 "node_modules"
             ],
-            "file_exclude_patterns": ["*.editorconfig", "*.eslint", "*.nvmrc", "*.DS_Store"]
+            "file_exclude_patterns": ["*.editorconfig", "*.eslintrc", "*.nvmrc", "*.DS_Store"]
         }
     ]
 }
