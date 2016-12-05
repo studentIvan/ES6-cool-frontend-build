@@ -1,0 +1,15 @@
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        meta(property="js:entry" content="app")
+        meta(property="js:dependencies" content="jquery")
+        meta(property="js:app-ver" content="default")
+        block title
+            title hello world
+        link(rel="stylesheet", href="/styles/main.css")
+    body
+        block content
+            | hello world 2
+        script(src="/scripts/resources.js")
+        script(src="/scripts/acme.js")

@@ -1,0 +1,10 @@
+{
+    "entries": {
+      "app": [
+        "scripts/acme.js.es5",
+        "scripts/resources.js.es5",
+        "styles/main.styl",
+        "index.js"
+      ]
+    }
+}

@@ -1,43 +1,161 @@
-const webpack = require("webpack");
-const path = require("path");
+const webpack = require('webpack');
+const path = require('path');
+const schema = require('./src/schema');
+const nib = require('nib');
 
-module.exports = {
-    entry: {
-        app: [
-            "./src/scripts/app.js",
-            "./src/templates/index.pug",
-        ]
-    },
-    stats: { colors: true },
-    colors: true,
-    output: {
-        path: path.resolve(__dirname, "build"),
-        publicPath: "/",
-        filename: "scripts/bundle.js"
-    },
-    module: {
+/* webpack plugins classes */
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+/* signal the using file into the console */
+console.log('\x1b[36musing webpack.config.production.js...\x1b[0m');
+
+Object.keys(schema.entries).forEach(function (key) {
+  schema.entries[key] = schema.entries[key].map(function (entry) {
+    return './src/' + entry
+  });
+});
+
+module.exports = [
+{
+  name: 'bundle',
+  entry: schema.entries,
+  stats: { colors: true },
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    publicPath: '/',
+    filename: 'scripts/[name].js'
+  },
+
+  module: {
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader'
+      },
+      {
+        test: /\.js.es5$/,
+        exclude: /node_modules/,
+        loader: 'file-loader?name=scripts/[name]!uglify-loader'
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-            {
-                test: /\.pug$/,
-                exclude: /node_modules/,
-                loader: 'file?name=[name].html!extract!html!pug-html-loader?exports=false'
-            },
-        ],
-        preLoaders: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'jshint-loader'
+            'file-loader?name=images/[name].[ext]',
+            'image-webpack-loader?bypassOnDebug&optimizationLevel=3&interlaced=false'
+        ]
+      },
+      {
+        test: /\.styl$/,
+        exclude: /node_modules/,
+        loader: 'file-loader?name=styles/[name].css!extract-loader!css-loader?minimize!stylus-loader'
+      },
+      {
+        test: /\.pug$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].html'
             }
-       ],
-    },
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin(),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.DefinePlugin({
-            'process.env': {
-                'NODE_ENV': JSON.stringify('production')
+          },
+          {
+            loader: 'extract-loader'
+          },
+          {
+            loader: 'apply-loader'
+          },
+          {
+            loader: 'pug-loader',
+            options: {
+              pretty: false,
+              root: path.resolve(__dirname, 'src')
             }
-        })
+          },
+        ]
+      }
     ]
-}
+  },
+
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      test: /\.styl$/,
+      stylus: {
+        // You can have multiple stylus configs with other names and use them
+        // with `stylus-loader?config=otherConfig`.
+        default: {
+          use: [nib()],
+          import: ['~nib/lib/nib/index.styl']
+        },
+      },
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new CleanWebpackPlugin(['build']),
+    new webpack.optimize.UglifyJsPlugin(),
+  ]
+},
+{
+  name: 'bundle.legacy',
+  entry: { bundle: './src/bundle.legacy.js' },
+  stats: { colors: true },
+  devtool: 'none',
+  cache: false, // turn off this shit
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    publicPath: '/',
+    filename: 'scripts/bundle.legacy.js'
+  },
+  module: {
+    rules: [
+    {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          plugins: [
+            'transform-es2015-template-literals',
+            'transform-es2015-literals',
+            'transform-es2015-function-name',
+            'transform-es2015-arrow-functions',
+            'transform-es2015-block-scoped-functions',
+            'transform-es2015-classes',
+            'transform-es2015-object-super',
+            'transform-es2015-shorthand-properties',
+            'transform-es2015-computed-properties',
+            'transform-es2015-for-of',
+            'transform-es2015-sticky-regex',
+            'transform-es2015-unicode-regex',
+            'check-es2015-constants',
+            'transform-es2015-spread',
+            'transform-es2015-parameters',
+            'transform-es2015-destructuring',
+            'transform-es2015-block-scoping',
+            'transform-es2015-typeof-symbol',
+            ['transform-regenerator', { async: false, asyncGenerators: false }],
+          ],
+        }
+      }],
+    },
+    {
+      test: /\.pug$/,
+      use: [{
+        loader: 'null-loader'
+      }],
+    }]
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin(),
+  ],
+}]
