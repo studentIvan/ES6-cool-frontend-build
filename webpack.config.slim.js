@@ -1,8 +1,3 @@
-const webpack = require('webpack');
-const path = require('path');
-const schema = require('./src/schema');
-const nib = require('nib');
-
 const log = console.log;
 console.log = function() {};
 const configuration = require('./webpack.config');
