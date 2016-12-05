@@ -1,4 +1,0 @@
-{
-    "IE11": ["Object.assign", "Promise", "Map"],
-    "Android": ["Object.assign", "Map"]
-}
