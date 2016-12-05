@@ -3,4 +3,4 @@ node_modules
 build/
 builder/
 .DS_Store
-
+*.sublime-workspace
