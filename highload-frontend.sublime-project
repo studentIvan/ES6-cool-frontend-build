@@ -1,13 +1,18 @@
 {
-    "folders":
-    [
-        {
-            "path": ".",
-            "folder_exclude_patterns":
-            [
-                "node_modules"
-            ],
-            "file_exclude_patterns": ["*.editorconfig", "*.eslintrc", "*.nvmrc", "*.DS_Store"]
-        }
-    ]
+  "folders": 
+  [
+    {
+      "path": ".",
+      "folder_exclude_patterns":
+      [
+        "node_modules"
+      ],
+      "file_exclude_patterns": [
+        "*.editorconfig",
+        "*.eslintrc",
+        "*.nvmrc",
+        "*.DS_Store"
+      ]
+    }
+  ]
 }

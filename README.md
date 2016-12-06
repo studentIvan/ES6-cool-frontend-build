@@ -39,9 +39,9 @@ Extra commands:
 * `webpack` - do manual dev webpack build with legacy browsers support
 
 How to do the page:
-* configure resources.js file - you can use several CDNs for each library
-* inside your page include the smart scripts resources.js and acme.js (see the example)
-* configure new entry point inside src/schema.json if needed
+* configure resources.json file - you can use several CDNs for each library
+* inside your page include the smart script acme.js (see the example)
+* configure new entry point inside src/entries/schema.json if needed
 * put the dependencies and the entry name inside the meta tags like on the example below
 * js:dependencies can contains libraries described in the resources.js file
 * the libraries can be described with comma (a,b,c) and with :async modifier (a:async,b)
@@ -54,17 +54,14 @@ doctype html
 html
     head
         meta(charset="utf-8")
-        meta(property="js:entry" content="app")
-        meta(property="js:dependencies" content="jquery")
-        meta(property="js:app-ver" content="default")
-        block title
-            title hello world
-        link(rel="stylesheet", href="/styles/main.css")
+        meta(property="js:entry" content="index")
+        meta(property="js:dependencies:libraries" content="jquery,bootstrap,moment")
+        meta(property="js:dependencies:modules" content="module1,module2,module3")
+        meta(property="js:app-ver" content="1.0.1")
+        ...
     body
-        block content
-            | hello world 2
-        script(src="/scripts/resources.js")
-        script(src="/scripts/acme.js")
+        ...
+        script(src="/scripts/core/acme.js")
 ```
 
 ```html
@@ -72,16 +69,15 @@ html
 <html>
   <head>
     <meta charset="utf-8">
-    <meta property="js:entry" content="app">
-    <meta property="js:dependencies" content="jquery">
-    <meta property="js:app-ver" content="default">
-    <title>Article Title</title>
-    <link rel="stylesheet" href="/styles/main.css">
+    <meta property="js:entry" content="index">
+    <meta property="js:dependencies:libraries" content="jquery,bootstrap,moment">
+    <meta property="js:dependencies:modules" content="module1,module2,module3">
+    <meta property="js:app-ver" content="1.0.1">
+    ...
   </head>
   <body>
-    <h1>My</h1><span class="example">test7</span>
-    <script src="/scripts/resources.js"></script>
-    <script src="/scripts/acme.js"></script>
+    ...
+    <script src="/scripts/core/acme.js"></script>
   </body>
 </html>
 ```

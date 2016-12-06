@@ -5,5 +5,6 @@ console.log = log;
 
 /* signal the using file into the console */
 console.log('\x1b[36musing webpack.config.slim.js...\x1b[0m');
-configuration.splice(1, 1);
+configuration[1].name = 'acme.js';
+delete configuration[1].entry['bundle'];
 module.exports = configuration;

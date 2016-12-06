@@ -22,6 +22,16 @@ indent_size = 4
 indent_style = space
 indent_size = 2
 
+# stylesheets 2 space indentation
+[*.{css,styl}]
+indent_style = space
+indent_size = 2
+
+# pug 2 space indentation
+[*.{pug,jade}]
+indent_style = space
+indent_size = 2
+
 # Matches the exact files either package.json or .travis.yml
 [.travis.yml]
 indent_style = space

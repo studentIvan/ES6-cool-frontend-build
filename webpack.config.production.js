@@ -1,29 +1,38 @@
 const webpack = require('webpack');
 const path = require('path');
-const schema = require('./src/schema');
+const schema = require('./src/entries/schema');
+const package = require('./package');
+const bootstrap = require('bootstrap-styl');
 const nib = require('nib');
 
 /* webpack plugins classes */
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
+/* webpack plugins */
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
 /* signal the using file into the console */
 console.log('\x1b[36musing webpack.config.production.js...\x1b[0m');
 
 Object.keys(schema.entries).forEach(function (key) {
+  if (typeof schema.entries[key] !== 'array') {
+    schema.entries[key] = [schema.entries[key]];
+  }
+
   schema.entries[key] = schema.entries[key].map(function (entry) {
-    return './src/' + entry
+    return './src/entries/' + entry;
   });
 });
 
 module.exports = [
 {
-  name: 'bundle',
+  name: 'project',
   entry: schema.entries,
   stats: { colors: true },
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
-    filename: 'scripts/[name].js'
+    filename: 'scripts/[name]/[name].js'
   },
 
   module: {
@@ -35,21 +44,30 @@ module.exports = [
         loader: 'eslint-loader'
       },
       {
-        test: /\.js.es5$/,
-        exclude: /node_modules/,
-        loader: 'file-loader?name=scripts/[name]!uglify-loader'
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'url-loader?name=fonts/[name].[ext]&limit=10000&mimetype=application/font-woff'
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'file-loader?name=fonts/[name].[ext]'
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-            'file-loader?name=images/[name].[ext]',
-            'image-webpack-loader?bypassOnDebug&optimizationLevel=3&interlaced=false'
+          'url-loader?name=images/[hash].[ext]&limit=10000',
+          'image-webpack-loader?bypassOnDebug&optimizationLevel=3&interlaced=false'
         ]
       },
       {
         test: /\.styl$/,
-        exclude: /node_modules/,
-        loader: 'file-loader?name=styles/[name].css!extract-loader!css-loader?minimize!stylus-loader'
+        loader: ExtractTextPlugin.extract([
+          'css-loader?minimize&importLoaders=1',
+          'stylus-loader'
+        ])
       },
       {
         test: /\.pug$/,
@@ -65,7 +83,12 @@ module.exports = [
             loader: 'extract-loader'
           },
           {
-            loader: 'apply-loader'
+            loader: 'apply-loader',
+            options: {
+              args: [{
+                version: package.version || '0.0.1'
+              }]
+            }
           },
           {
             loader: 'pug-loader',
@@ -83,14 +106,24 @@ module.exports = [
     new webpack.LoaderOptionsPlugin({
       test: /\.styl$/,
       stylus: {
-        // You can have multiple stylus configs with other names and use them
-        // with `stylus-loader?config=otherConfig`.
         default: {
-          use: [nib()],
-          import: ['~nib/lib/nib/index.styl']
+          paths: [
+            path.join(__dirname, 'node_modules'),
+            path.join(__dirname, 'src'),
+            path.join(__dirname, 'src/styles'),
+          ],
+          use: [nib(), bootstrap()],
+          import: [
+            '~nib/lib/nib/index.styl',
+            path.join(__dirname, 'src/styles/configuration.styl'),
+            path.join(__dirname, 'src/styles/core.styl'),
+          ],
+          'resolve url': true,
+          'include css': true
         },
       },
     }),
+    new ExtractTextPlugin('styles/[name].css'),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
@@ -102,14 +135,17 @@ module.exports = [
 },
 {
   name: 'bundle.legacy',
-  entry: { bundle: './src/bundle.legacy.js' },
+  entry: {
+    'core/acme': './src/entries/core/acme.js',
+    'bundle.legacy': './src/entries/legacy/bundle.legacy.js'
+  },
   stats: { colors: true },
   devtool: 'none',
   cache: false, // turn off this shit
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
-    filename: 'scripts/bundle.legacy.js'
+    filename: 'scripts/[name].js'
   },
   module: {
     rules: [
@@ -144,7 +180,11 @@ module.exports = [
       }],
     },
     {
-      test: /\.pug$/,
+      test: /\.json$/,
+      loader: 'json-loader'
+    },
+    {
+      test: /\.(pug|styl|css|jpe?g|png|gif)$/,
       use: [{
         loader: 'null-loader'
       }],

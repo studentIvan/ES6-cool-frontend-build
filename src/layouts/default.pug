@@ -1,15 +1,18 @@
+- var xxx = 'demo variable'
 doctype html
 html
     head
         meta(charset="utf-8")
-        meta(property="js:entry" content="app")
-        meta(property="js:dependencies" content="jquery")
-        meta(property="js:app-ver" content="default")
         block title
             title hello world
-        link(rel="stylesheet", href="/styles/main.css")
+        block head
+            meta(property="js:entry", content="index")
+            meta(property="js:dependencies:libraries", content="jquery,moment,bootstrap")
+            meta(property="js:dependencies:modules", content="")
+            meta(property="js:app-ver", content=version)
+            link(rel="stylesheet", href="/styles/index.css?v=" + version)
     body
         block content
-            | hello world 2
-        script(src="/scripts/resources.js")
-        script(src="/scripts/acme.js")
+            | hello world
+        p.example= xxx
+        script(src="/scripts/core/acme.js?v=" + version)

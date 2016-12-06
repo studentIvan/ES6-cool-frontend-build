@@ -1,0 +1,17 @@
+/**
+ * iPad mixin
+ * example:
+ * +ipad(all, landscape)
+ *   body
+ *     display none
+ */
+ipad($version = all, $orientation = all)
+  $media-orientation = $orientation == all ? 'and' : 'and (orientation: ' + $orientation + ') and'
+  if $version == mini or $version == 1 or $version == 2 or $version == all
+    $query = 'only screen and (min-device-width: 768px) and (max-device-width: 1024px) %s (-webkit-min-device-pixel-ratio: 1)' % $media-orientation
+    @media $query
+      {block}
+  if $version == 3 $version == 4 or $version == all
+    $query = 'only screen and (min-device-width: 768px) and (max-device-width: 1024px) %s (-webkit-min-device-pixel-ratio: 2)' % $media-orientation
+    @media $query
+      {block}

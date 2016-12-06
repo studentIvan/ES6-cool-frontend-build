@@ -1,0 +1,19 @@
+@import './test.css'
+
+global-reset() // apply reset.css
+reset-html5() // apply reset.css for html5 components
+
+// simple BEM example
+.test
+  width 284.3px
+  height 426.6px
+  
+  &--highlighted
+    image '../../images/nicely.jpg' 284.3px 426.6px
+    margin 10px
+  
+  &__element
+    display block
+      
+    &--highlighted
+      display block
