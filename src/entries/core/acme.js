@@ -40,15 +40,21 @@ const isSupportsDefaultParamsDestructing = function () {
  * @return {String} path
  */
 const getScriptLocation = (moduleName, iteration) => {
-    if (resources[moduleName] && iteration < resources[moduleName].length) {
-        return resources[moduleName][iteration || 0];
-    }
-    else {
-        return {
-            url: `${scriptBasePath}/${moduleName}/${moduleName}.js`,
-            stopIterations: true
-        };
-    }
+  if (moduleName === `${scriptBasePath}/bundle.legacy.js`) {
+    return {
+      url: moduleName,
+      stopIterations: true
+    };
+  }
+  else if (resources[moduleName] && iteration < resources[moduleName].length) {
+    return resources[moduleName][iteration || 0];
+  }
+  else {
+    return {
+      url: `${scriptBasePath}/${moduleName}/${moduleName}.js`,
+      stopIterations: true
+    };
+  }
 };
 
 const metaJSRead = (property, defaultValue = '') => 
