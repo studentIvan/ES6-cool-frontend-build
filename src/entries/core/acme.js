@@ -80,15 +80,18 @@ const includeScript = (moduleName, asyncScript = false, iteration = 0, withVersi
     const scriptLocation = getScriptLocation(moduleName, iteration);
 
     if (asyncScript) {
-        scriptElement.async = 'async';
+      scriptElement.async = 'async';
+    }
+    else {
+      scriptElement.defer = 'defer';
     }
 
     if (scriptLocation.integrity) {
-        scriptElement.integrity = scriptLocation.integrity;
+      scriptElement.integrity = scriptLocation.integrity;
     }
 
     if (scriptLocation.crossorigin) {
-        scriptElement.crossorigin = scriptLocation.crossorigin;
+      scriptElement.crossorigin = scriptLocation.crossorigin;
     }
 
     scriptElement.src = 
