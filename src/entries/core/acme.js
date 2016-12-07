@@ -1,5 +1,4 @@
-import 'babel-runtime/core-js/get-iterator';
-import 'babel-runtime/core-js/symbol';
+import Symbol from 'es6-symbol';
 import Promise from 'promise-polyfill';
 
 /**
