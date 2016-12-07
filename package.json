@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "no description",
   "scripts": {
-    "start": "webpack-dev-server --config webpack.config.slim.js",
+    "start": "webpack-dev-server --host 0.0.0.0 --config webpack.config.slim.js",
     "build": "webpack --config webpack.config.production.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
