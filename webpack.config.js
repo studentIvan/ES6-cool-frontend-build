@@ -7,6 +7,7 @@ const bootstrap = require('bootstrap-styl');
 
 /* webpack plugins */
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 /* signal the using file into the console */
 console.log('\x1b[36musing webpack.config.js...\x1b[0m');
@@ -38,7 +39,8 @@ module.exports = [
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
-    filename: 'scripts/[name]/[name].js'
+    filename: 'scripts/[name]/[name].js',
+    chunkFilename: 'scripts/chunks/[id].[hash].chunk.js'
   },
 
   module: {
@@ -108,6 +110,7 @@ module.exports = [
   },
 
   plugins: [
+    new CleanWebpackPlugin(['build/scripts/chunks']),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.LoaderOptionsPlugin({
       test: /\.styl$/,
@@ -158,7 +161,8 @@ module.exports = [
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
-    filename: 'scripts/[name].js'
+    filename: 'scripts/[name].js',
+    chunkFilename: 'scripts/core/[id].[hash].chunk.js'
   },
   module: {
     rules: [
@@ -169,6 +173,7 @@ module.exports = [
         loader: 'babel-loader',
         options: {
           plugins: [
+            'system-import-transformer',
             'transform-es2015-template-literals',
             'transform-es2015-literals',
             'transform-es2015-function-name',
@@ -192,11 +197,6 @@ module.exports = [
         }
       }],
     },
-    // {
-    //   // enforce: 'pre',
-    //   test: /acme\.js$/,
-    //   loader: 'uglify-loader'
-    // },
     {
       test: /\.json$/,
       loader: 'json-loader'
@@ -208,5 +208,8 @@ module.exports = [
       }],
     }]
   },
-  plugins: [],
+  plugins: [
+    new CleanWebpackPlugin(['build/scripts/core']),
+    new webpack.optimize.UglifyJsPlugin()
+  ],
 }]

@@ -2,19 +2,18 @@
   "scriptBasePath": "/scripts",
   "resources": {
     "jquery": [{
-      "url": "https://yastatic.net/jquery/3.1.0/jquery.min.js"
+      "url": "https://yastatic.net/jquery/3.1.0/jquery.min.js",
+      "integrity": "sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq",
+      "crossOrigin": "anonymous"
     }, {
       "url": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js",
       "integrity": "sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=",
       "crossOrigin": "anonymous"
     }],
     "moment": [{
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment-with-locales.min.js"
-    }],
-    "bootstrap": [{
-      "url": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-    }, {
-      "url": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment-with-locales.min.js",
+      "integrity": "sha384-8SI662MiMZn6eppgHSTHOne5FhCD3QYAv8U9DPvf5PhVa4F/zPm6jxrhJSNcc0SJ",
+      "crossOrigin": "anonymous"
     }]
   }
 }

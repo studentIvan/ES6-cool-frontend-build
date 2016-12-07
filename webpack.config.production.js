@@ -32,7 +32,8 @@ module.exports = [
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
-    filename: 'scripts/[name]/[name].js'
+    filename: 'scripts/[name]/[name].js',
+    chunkFilename: 'scripts/chunks/[id].[hash].chunk.js'
   },
 
   module: {
@@ -145,7 +146,8 @@ module.exports = [
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
-    filename: 'scripts/[name].js'
+    filename: 'scripts/[name].js',
+    chunkFilename: 'scripts/core/[id].[hash].chunk.js'
   },
   module: {
     rules: [
@@ -196,6 +198,6 @@ module.exports = [
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.UglifyJsPlugin()
   ],
 }]

@@ -1,3 +1,5 @@
+import 'core-js/es6/promise';
+
 /**
  * read the resources.json file
  */
@@ -31,6 +33,9 @@ const isSupportsDefaultParamsDestructing = function () {
     } catch (e) { return false; }
     return true;
 };
+
+const harmonyMode = isSupportsBasicES6() 
+  && isSupportsDefaultParamsDestructing();
 
 const start = () => {
 
@@ -120,7 +125,7 @@ const start = () => {
     loadedLibsCount = loadedLibsCount + 1;
     if (loadedLibsCount >= libraries.length) {
       /* the all libraries are loaded now */
-      if (isSupportsBasicES6() && isSupportsDefaultParamsDestructing()) {
+      if (harmonyMode) {
         if (!modules.length) { modulesLoadedCallback(); }
         let chain = Promise.resolve();
         for (let syncModule of modules) {
@@ -162,24 +167,4 @@ const start = () => {
   }
 };
 
-/* check that browser supports Promise and Symbol */
-const promiseSupport = (typeof Promise !== 'undefined');
-const symbolSupport = (typeof Symbol !== 'undefined');
-
-if (!promiseSupport || !symbolSupport) {
-  let script = 'https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.16.0/polyfill.min.js';
-  let scriptElement = document.createElement('script');
-  scriptElement.src = script;
-  document.head.appendChild(scriptElement);
-  scriptElement.onload = () => start();
-  scriptElement.onerror = () => {
-    let script = 'https://cdn.polyfill.io/v2/polyfill.js?features=es6';
-    let scriptElement = document.createElement('script');
-    scriptElement.src = script;
-    document.head.appendChild(scriptElement);
-    scriptElement.onload = () => start();
-  };
-}
-else {
-  start(); // just start the script
-}
+if (!harmonyMode) { System.import('babel-polyfill').then(() => start()) } else { start() }
