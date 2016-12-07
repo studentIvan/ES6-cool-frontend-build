@@ -48,11 +48,11 @@ total ES6/7 features stable and transpilable to old
 
 9. destructing, declarations: 
     IE11: false, Safari 9: false, Android: false
-    Safari: true, FF: false, Chrome: true, Edge: false
+    Safari: true, FF: true, Chrome: true, Edge: false
 
 10. destructuring, assignment: 
     IE11: false, Safari 9: false, Android: false
-    Safari: true, FF: false, Chrome: true, Edge: false
+    Safari: true, FF: true, Chrome: true, Edge: false
 
 11. destructuring, parameters: 
     IE11: false, Safari 9: false, Android: false

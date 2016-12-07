@@ -1,3 +1,5 @@
+import Promise from 'promise-polyfill';
+
 /**
  * read the resources.json file
  */
@@ -37,23 +39,33 @@ const isSupportsDefaultParamsDestructing = function () {
  *
  * use the https://www.srihash.org/ for SRI hash generation
  * @param  {String} moduleName
- * @return {String} path
+ * @return {Iterator} path
  */
-const getScriptLocation = (moduleName, iteration) => {
-  if (moduleName === `${scriptBasePath}/bundle.legacy.js`) {
-    return {
-      url: moduleName,
-      stopIterations: true
-    };
+const getScriptData = (moduleName) => {
+  let nextIndex = 0;
+  const _getScriptObject = (result) => {
+    return typeof result === 'string' ? { url: result } : result;
   }
-  else if (resources[moduleName] && iteration < resources[moduleName].length) {
-    return resources[moduleName][iteration || 0];
+  if (moduleName === 'legacy') {
+    return { next: () => {
+      return nextIndex++ === 0
+        ? { value: _getScriptObject(`${scriptBasePath}/bundle.legacy.js`), done: false }
+        : { done: true }
+    } }
+  }
+  else if (resources[moduleName] && nextIndex < resources[moduleName].length) {
+    return { next: () => {
+      return nextIndex < resources[moduleName].length 
+        ? { value: _getScriptObject(resources[moduleName][nextIndex++]), done: false }
+        : { done: true }
+    } }
   }
   else {
-    return {
-      url: `${scriptBasePath}/${moduleName}/${moduleName}.js`,
-      stopIterations: true
-    };
+    let value = _getScriptObject(`${scriptBasePath}/${moduleName}/${moduleName}.js`);
+    return { next: () => {
+      return nextIndex++ < 1
+        ? { value, done: false } : { done: true }
+    } };
   }
 };
 
@@ -61,88 +73,90 @@ const metaJSRead = (property, defaultValue = '') =>
     (document.head.querySelector(`[property="js:${property}"]`) 
     || { content: defaultValue }).content;
 
+const pageEntry = metaJSRead('entry');
 const appVersionCode = metaJSRead('app-ver');
-let libraries = metaJSRead('dependencies:libraries').split(',');
-let modules = metaJSRead('dependencies:modules').split(',');
+const libraries = metaJSRead('dependencies:libraries').split(',').filter(x => x);
+const modules = metaJSRead('dependencies:modules').split(',').filter(x => x);
 
-if (!libraries[0]) { libraries = []; }
-if (!modules[0]) { modules = []; }
+const includeScript = (moduleName, asyncScript = false, withVersion = false) => {
+  const scriptDataIterator = getScriptData(moduleName);
 
-/**
- * include script to the page
- * @param  {String} moduleName - if contains :async when previous/next will not wait
- * @param  {Boolean} asyncScript - is script tag async
- * @param  {Number} iteration - cursor to module array
- * @return {Object} - <script> object
- */
-const includeScript = (moduleName, asyncScript = false, iteration = 0, withVersion = false) => {
-    const scriptElement = document.createElement('script');
-    const scriptLocation = getScriptLocation(moduleName, iteration);
-
-    if (asyncScript) {
-      scriptElement.async = 'async';
-    }
-    else {
-      scriptElement.defer = 'defer';
-    }
-
-    if (scriptLocation.integrity) {
-      scriptElement.integrity = scriptLocation.integrity;
-    }
-
-    if (scriptLocation.crossorigin) {
-      scriptElement.crossorigin = scriptLocation.crossorigin;
-    }
-
-    scriptElement.src = 
-      `${scriptLocation.url || scriptLocation}${withVersion ? `?v=${appVersionCode}` : ''}`;
-
-    document.head.appendChild(scriptElement);
-
-    if (!scriptLocation.stopIterations) {
-        scriptElement.onerror = () => {
-            includeScript(moduleName, asyncScript, iteration + 1, withVersion);
-        };
-    }
-
-    return scriptElement;
-};
-
-const loadDeps = (deps, indexedDeps = [], callback = () => {}, withVersion = false) => {
-  indexedDeps.totalLoaded = 0;
-
-  deps.forEach((dependency) => {
-    const [dependencyName, dependencyAsync] = dependency.split(':');
-    const scriptElement = 
-      includeScript(dependencyName, Boolean(dependencyAsync), 0, withVersion);
-
-    indexedDeps.push(scriptElement);
-
-    scriptElement.onload = () => {
-      indexedDeps.totalLoaded = indexedDeps.totalLoaded + 1;
-      if (indexedDeps.totalLoaded === indexedDeps.length) {
-        callback();
+  const _createScript = () => {
+    return new Promise((resolve, reject) => {
+      let scriptData = scriptDataIterator.next();
+      if (scriptData.done) { return reject(); }
+      let scriptElement = document.createElement('script');
+      if (asyncScript) { scriptElement.async = 'async'; }
+      if (scriptData.value.integrity) {
+        scriptElement.integrity = scriptData.value.integrity;
+        scriptElement.crossOrigin = scriptData.value.crossOrigin;
       }
-    };
-  });
 
-  if (!indexedDeps.length) {
-    callback();
+      scriptElement.src = 
+        `${scriptData.value.url}${withVersion ? `?v=${appVersionCode}` : ''}`;
+
+      document.head.appendChild(scriptElement);
+      scriptElement.onload = () => {resolve();}
+      scriptElement.onerror = () => 
+        _createScript().then(() => resolve()).catch(() => reject());
+    });
+  }
+
+  return _createScript();
+}
+
+let chain = Promise.resolve();
+let loadedLibsCount = 0;
+let loadedModulesCount = 0;
+
+const modulesLoadedCallback = () => {
+  loadedModulesCount = loadedModulesCount + 1;
+  if (loadedModulesCount >= modules.length) {
+    includeScript(pageEntry, true, true);
   }
 }
 
-const bundleLibraries = [];
-
-loadDeps(libraries, bundleLibraries, () => {
-  if (isSupportsBasicES6() && isSupportsDefaultParamsDestructing()) {
-    const bundleDependencies = [];
-
-    loadDeps(modules, bundleDependencies, () => {
-      const defaultModuleName = metaJSRead('entry', 'bundle');
-      includeScript(defaultModuleName, false, 0, true);
-    }, true);
+const libsLoadedCallback = () => {
+  loadedLibsCount = loadedLibsCount + 1;
+  if (loadedLibsCount >= libraries.length) {
+    /* the all libraries are loaded now */
+    if (isSupportsBasicES6() && isSupportsDefaultParamsDestructing()) {
+      if (!modules.length) { modulesLoadedCallback(); }
+      let chain = Promise.resolve();
+      for (let syncModule of modules) {
+        let [module, moduleData] = syncModule.split(':');
+        let isModuleAsync = moduleData === 'async';
+        chain = chain.then(() => {
+          if (isModuleAsync) {
+            includeScript(module, true, true).then(() => modulesLoadedCallback());
+            return Promise.resolve();
+          }
+          else {
+            modulesLoadedCallback();
+            return includeScript(module, false, true);
+          }
+        });
+      }
+    }
+    else {
+      /* this browser does now support es6 well - load legacy */
+      includeScript('legacy', false, true);
+    }
   }
-  else {
-    includeScript(`${scriptBasePath}/bundle.legacy.js`);
-  }
-}); 
+};
+
+if (!libraries.length) { libsLoadedCallback(); }
+for (let syncLib of libraries) {
+  let [lib, libData] = syncLib.split(':');
+  let isLibAsync = libData === 'async';
+  chain = chain.then(() => {
+    if (isLibAsync) {
+      includeScript(lib, true).then(() => libsLoadedCallback());
+      return Promise.resolve();
+    }
+    else {
+      libsLoadedCallback();
+      return includeScript(lib);
+    }
+  });
+}

@@ -192,11 +192,11 @@ module.exports = [
         }
       }],
     },
-    {
-      enforce: 'pre',
-      test: /acme\.js$/,
-      loader: 'uglify-loader'
-    },
+    // {
+    //   // enforce: 'pre',
+    //   test: /acme\.js$/,
+    //   loader: 'uglify-loader'
+    // },
     {
       test: /\.json$/,
       loader: 'json-loader'

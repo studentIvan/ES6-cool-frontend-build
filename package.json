@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "bootstrap-styl": "^5.0.8",
-    "moment": "^2.17.1"
+    "promise-polyfill": "^6.0.2"
   }
 }
