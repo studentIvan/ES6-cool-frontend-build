@@ -32,11 +32,11 @@ Commands:
 * `npm install` - install the dependencies/requirements for development or building
 * `npm start` - start webpack-dev-server with slim configuration (without legacy browsers support while development)
 * `npm run build` - do production build with legacy browsers support
+* `npm run build-dev` - do development build with legacy browsers support
 
 Extra commands:
 
 * `webpack-dev-server` - run webpack-dev-server with legacy browsers support
-* `webpack` - do manual dev webpack build with legacy browsers support
 
 How to do the page:
 * configure resources.json file - you can use several CDNs for each library

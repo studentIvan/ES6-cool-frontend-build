@@ -5,6 +5,13 @@ import 'core-js/es6/promise';
  */
 const { scriptBasePath, resources } = require('../resources.json');
 
+
+/**
+ * angular2 auto bootstrap
+ * @type {Boolean}
+ */
+window.autoBootstrap = true;
+
 /**
  * check that browser supports basic ES6
  * @return {Boolean}
@@ -117,6 +124,7 @@ const start = () => {
   const modulesLoadedCallback = () => {
     loadedModulesCount = loadedModulesCount + 1;
     if (loadedModulesCount >= modules.length) {
+      /* the all modules are loaded now */
       includeScript(pageEntry, true, true);
     }
   }
@@ -137,8 +145,9 @@ const start = () => {
               return Promise.resolve();
             }
             else {
-              modulesLoadedCallback();
-              return includeScript(module, false, true);
+              let x = includeScript(module, false, true);
+              x.then(() => modulesLoadedCallback());
+              return x;
             }
           });
         }
@@ -160,8 +169,9 @@ const start = () => {
         return Promise.resolve();
       }
       else {
-        libsLoadedCallback();
-        return includeScript(lib);
+        let x = includeScript(lib);
+        x.then(() => libsLoadedCallback());
+        return x;
       }
     });
   }

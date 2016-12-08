@@ -14,12 +14,19 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 /* signal the using file into the console */
 console.log('\x1b[36musing webpack.config.production.js...\x1b[0m');
 
+let productionLegacy = ['./src/entries/legacy/bundle.legacy.js'];
+
 Object.keys(schema.entries).forEach(function (key) {
-  if (typeof schema.entries[key] !== 'array') {
+  if (!Array.isArray(schema.entries[key])) {
     schema.entries[key] = [schema.entries[key]];
   }
 
   schema.entries[key] = schema.entries[key].map(function (entry) {
+    if (entry.split(':').indexOf('production-only') === 0) {
+      entry = entry.split(':')[1];
+      productionLegacy.unshift('./src/entries/' + entry);
+    }
+    
     return './src/entries/' + entry;
   });
 });
@@ -36,13 +43,20 @@ module.exports = [
     chunkFilename: 'scripts/chunks/[id].[hash].chunk.js'
   },
 
+  resolve: {
+    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    mainFiles: ['index'],
+  },
+
   module: {
     rules: [
       {
-        enforce: 'pre',
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader'
+        test: /\.ts$/,
+        loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: 'tsconfig.json'
+        }
       },
       {
         test: /\.json$/,
@@ -104,6 +118,13 @@ module.exports = [
   },
 
   plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: ['vendors']
+    }),
+    new webpack.ContextReplacementPlugin(
+      /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+      __dirname
+    ),
     new webpack.LoaderOptionsPlugin({
       test: /\.styl$/,
       stylus: {
@@ -130,15 +151,21 @@ module.exports = [
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new CleanWebpackPlugin(['build']),
-    new webpack.optimize.UglifyJsPlugin(),
+    new CleanWebpackPlugin(['build'], { verbose: false }),
+    new webpack.optimize.UglifyJsPlugin({
+      'screw-ie8': true,
+      compress: true,
+      mangle: true,
+      comments: false,
+      output: { comments: false }
+    }),
   ]
 },
 {
   name: 'bundle.legacy',
   entry: {
     'core/acme': './src/entries/core/acme.js',
-    'bundle.legacy': './src/entries/legacy/bundle.legacy.js'
+    'bundle.legacy': productionLegacy
   },
   stats: { colors: true },
   devtool: 'none',
@@ -149,8 +176,22 @@ module.exports = [
     filename: 'scripts/[name].js',
     chunkFilename: 'scripts/core/[id].[hash].chunk.js'
   },
+
+  resolve: {
+    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    mainFiles: ['index'],
+  },
+
   module: {
     rules: [
+    {
+      test: /\.ts$/,
+      loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: 'tsconfig.production.json'
+        }
+    },
     {
       test: /\.js$/,
       exclude: /node_modules/,
@@ -158,6 +199,7 @@ module.exports = [
         loader: 'babel-loader',
         options: {
           plugins: [
+            'system-import-transformer',
             'transform-es2015-template-literals',
             'transform-es2015-literals',
             'transform-es2015-function-name',
@@ -193,11 +235,21 @@ module.exports = [
     }]
   },
   plugins: [
+    new webpack.ContextReplacementPlugin(
+      /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+      __dirname
+    ),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin({
+      'screw-ie8': true,
+      compress: true,
+      mangle: true,
+      comments: false,
+      output: { comments: false }
+    })
   ],
 }]

@@ -1,5 +1,11 @@
 {
     "entries": {
-      "index": "index/index.js"
+      "index": [
+        "production-only:index/index.production.ts",
+        "index/index.js"
+      ],
+      "vendors": [
+        "vendors/vendors.ts"
+      ]
     }
 }

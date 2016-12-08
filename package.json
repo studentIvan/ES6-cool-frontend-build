@@ -5,18 +5,32 @@
   "scripts": {
     "start": "webpack-dev-server --host 0.0.0.0 --config webpack.config.slim.js",
     "build": "webpack --config webpack.config.production.js",
+    "build-dev": "webpack --config webpack.config.devbuild.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "studentivan.ru",
   "license": "MIT",
   "dependencies": {
+    "@angular/platform-browser": "^2.3.0",
+    "@angular/platform-browser-dynamic": "^2.3.0",
     "bootstrap": "^3.3.7"
   },
   "devDependencies": {
+    "@angular/common": "^2.3.0",
+    "@angular/compiler": "^2.3.0",
+    "@angular/core": "^2.3.0",
+    "@angular/forms": "^2.3.0",
+    "@angular/http": "^2.3.0",
+    "@angularclass/hmr": "^1.2.2",
+    "@angularclass/hmr-loader": "^3.0.2",
+    "@types/core-js": "^0.9.35",
     "apply-loader": "^0.1.0",
+    "awesome-typescript-loader": "^3.0.0-beta.9",
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.8",
     "babel-plugin-system-import-transformer": "^2.4.0",
+    "babel-plugin-transform-class-properties": "^6.19.0",
+    "babel-plugin-transform-decorators": "^6.13.0",
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.18.0",
     "bootstrap-styl": "^5.0.8",
@@ -39,14 +53,22 @@
     "pug": "^2.0.0-beta6",
     "pug-loader": "pugjs/pug-loader#runtime-url",
     "pug-runtime": "^2.0.2",
+    "reflect-metadata": "^0.1.8",
+    "rxjs": "^5.0.0-rc.4",
     "style-loader": "^0.13.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^2.4.0",
+    "ts-helpers": "^1.1.2",
+    "tslint": "^4.0.2",
+    "tslint-loader": "^3.3.0",
+    "typescript": "^2.1.4",
+    "typings": "^2.0.0",
     "uglify-js": "mishoo/UglifyJS2#harmony",
     "uglify-loader": "^1.3.0",
     "url-loader": "^0.5.7",
     "webpack": "^2.1.0-beta.27",
     "webpack-dev-server": "^2.1.0-beta.12",
-    "whatwg-fetch": "^2.0.1"
+    "whatwg-fetch": "^2.0.1",
+    "zone.js": "^0.7.2"
   }
 }

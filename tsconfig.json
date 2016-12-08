@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "removeComments": true,
+    "target": "ES6",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "experimentalAsyncFunctions": false,
+    "useTranspileModule": true,
+    "module": "ES6",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types" : [
+      "core-js"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "useBabel": false,
+    "useCache": false,
+    "forkChecker": true,
+    "useWebpackText": true,
+    "transpileOnly": true,
+    "ignoreDiagnostics": [8014],
+    "babelOptions": {
+      "plugins": [
+        "system-import-transformer"
+      ]
+    }
+  }
+}

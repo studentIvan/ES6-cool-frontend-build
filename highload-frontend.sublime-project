@@ -5,9 +5,16 @@
       "path": ".",
       "folder_exclude_patterns":
       [
-        "node_modules"
+        "node_modules",
+        ".awcache"
       ],
       "file_exclude_patterns": [
+        ".gitignore",
+        "LICENSE",
+        "README.ES6.txt",
+        "README.md",
+        "tsconfig.json",
+        "tsconfig.production.json",
         "*.editorconfig",
         "*.eslintrc",
         "*.nvmrc",
