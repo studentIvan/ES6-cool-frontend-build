@@ -13,9 +13,13 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 console.log('\x1b[36musing webpack.config.js...\x1b[0m');
 
 Object.keys(schema.entries).forEach(function (key) {
-  if (typeof schema.entries[key] !== 'array') {
+  if (!Array.isArray(schema.entries[key])) {
     schema.entries[key] = [schema.entries[key]];
   }
+
+  schema.entries[key] = schema.entries[key].filter(function (entry) {
+    return entry.split(':').indexOf('production-only') !== 0 
+  });
 
   schema.entries[key] = schema.entries[key].map(function (entry) {
     return './src/entries/' + entry;
@@ -34,13 +38,27 @@ module.exports = [
 {
   name: 'project',
   entry: schema.entries,
-  stats: { colors: true },
-  devtool: 'source-map',
+  stats: {
+    assets: false,
+    colors: true,
+    version: false,
+    hash: false,
+    timings: false,
+    chunks: false,
+    chunkModules: false
+  },
+  devtool: 'eval',
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
     filename: 'scripts/[name]/[name].js',
     chunkFilename: 'scripts/chunks/[id].[hash].chunk.js'
+  },
+
+  resolve: {
+    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    extensions: ['.js', '.jsx'],
+    mainFiles: ['index'],
   },
 
   module: {
@@ -110,8 +128,8 @@ module.exports = [
   },
 
   plugins: [
-    new CleanWebpackPlugin(['build/scripts/chunks']),
     new webpack.HotModuleReplacementPlugin(),
+    new CleanWebpackPlugin(['build/scripts/chunks'], { verbose: false }),
     new webpack.LoaderOptionsPlugin({
       test: /\.styl$/,
       stylus: {
@@ -164,6 +182,13 @@ module.exports = [
     filename: 'scripts/[name].js',
     chunkFilename: 'scripts/core/[id].[hash].chunk.js'
   },
+
+  resolve: {
+    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    extensions: ['.js', '.jsx'],
+    mainFiles: ['index'],
+  },
+
   module: {
     rules: [
     {
@@ -209,7 +234,6 @@ module.exports = [
     }]
   },
   plugins: [
-    new CleanWebpackPlugin(['build/scripts/core']),
-    new webpack.optimize.UglifyJsPlugin()
+    new CleanWebpackPlugin(['build/scripts/core'], { verbose: false })
   ],
 }]

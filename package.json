@@ -5,6 +5,7 @@
   "scripts": {
     "start": "webpack-dev-server --host 0.0.0.0 --config webpack.config.slim.js",
     "build": "webpack --config webpack.config.production.js",
+    "build-dev": "webpack --config webpack.config.devbuild.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "studentivan.ru",

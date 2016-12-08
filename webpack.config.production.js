@@ -11,15 +11,22 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 /* webpack plugins */
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+let productionLegacy = ['./src/entries/legacy/bundle.legacy.js'];
+
 /* signal the using file into the console */
 console.log('\x1b[36musing webpack.config.production.js...\x1b[0m');
 
 Object.keys(schema.entries).forEach(function (key) {
-  if (typeof schema.entries[key] !== 'array') {
+  if (!Array.isArray(schema.entries[key])) {
     schema.entries[key] = [schema.entries[key]];
   }
 
   schema.entries[key] = schema.entries[key].map(function (entry) {
+    if (entry.split(':').indexOf('production-only') === 0) {
+      entry = entry.split(':')[1];
+      productionLegacy.unshift('./src/entries/' + entry);
+    }
+    
     return './src/entries/' + entry;
   });
 });
@@ -34,6 +41,12 @@ module.exports = [
     publicPath: '/',
     filename: 'scripts/[name]/[name].js',
     chunkFilename: 'scripts/chunks/[id].[hash].chunk.js'
+  },
+
+  resolve: {
+    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    extensions: ['.js', '.jsx'],
+    mainFiles: ['index'],
   },
 
   module: {
@@ -130,15 +143,21 @@ module.exports = [
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new CleanWebpackPlugin(['build']),
-    new webpack.optimize.UglifyJsPlugin(),
+    new CleanWebpackPlugin(['build'], { verbose: false }),
+    new webpack.optimize.UglifyJsPlugin({
+      'screw-ie8': true,
+      compress: true,
+      mangle: true,
+      comments: false,
+      output: { comments: false }
+    })
   ]
 },
 {
   name: 'bundle.legacy',
   entry: {
     'core/acme': './src/entries/core/acme.js',
-    'bundle.legacy': './src/entries/legacy/bundle.legacy.js'
+    'bundle.legacy': productionLegacy
   },
   stats: { colors: true },
   devtool: 'none',
@@ -149,6 +168,13 @@ module.exports = [
     filename: 'scripts/[name].js',
     chunkFilename: 'scripts/core/[id].[hash].chunk.js'
   },
+
+  resolve: {
+    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    extensions: ['.js', '.jsx'],
+    mainFiles: ['index'],
+  },
+
   module: {
     rules: [
     {
@@ -158,6 +184,7 @@ module.exports = [
         loader: 'babel-loader',
         options: {
           plugins: [
+            'system-import-transformer',
             'transform-es2015-template-literals',
             'transform-es2015-literals',
             'transform-es2015-function-name',
@@ -198,6 +225,12 @@ module.exports = [
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin({
+      'screw-ie8': true,
+      compress: true,
+      mangle: true,
+      comments: false,
+      output: { comments: false }
+    })
   ],
 }]
