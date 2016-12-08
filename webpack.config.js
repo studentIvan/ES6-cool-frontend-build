@@ -68,18 +68,18 @@ module.exports = [
         loaders: ['awesome-typescript-loader', '@angularclass/hmr-loader?pretty=true&prod=false'],
         exclude: [/\.(spec|e2e)\.ts$/]
       },
-      // {
-      //   enforce: 'pre',
-      //   test: /\.ts$/,
-      //   exclude: /node_modules/,
-      //   loader: 'tslint-loader'
-      // },
-      // {
-      //   enforce: 'pre',
-      //   test: /\.js$/,
-      //   exclude: /node_modules/,
-      //   loader: 'eslint-loader'
-      // },
+      {
+        enforce: 'pre',
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        loader: 'tslint-loader'
+      },
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader'
+      },
       {
         test: /\.json$/,
         loader: 'json-loader'

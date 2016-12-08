@@ -1,1 +1,1 @@
-import '../../ng2app/app.module.ts';
+import "../../ng2app/app.module.ts";
