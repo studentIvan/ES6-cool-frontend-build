@@ -195,7 +195,15 @@ module.exports = [
     'core/acme': './src/entries/core/acme.js',
     'bundle.legacy': './src/entries/legacy/bundle.legacy.js'
   },
-  stats: { colors: true },
+  stats: {
+    assets: false,
+    colors: true,
+    version: false,
+    hash: false,
+    timings: false,
+    chunks: false,
+    chunkModules: false
+  },
   devtool: 'none',
   cache: true,
   output: {
