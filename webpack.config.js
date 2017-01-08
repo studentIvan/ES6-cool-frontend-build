@@ -2,8 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const schema = require('./src/entries/schema');
 const package = require('./package');
-const nib = require('nib');
-const bootstrap = require('bootstrap-styl');
 
 /* webpack plugins */
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -39,13 +37,24 @@ module.exports = [
   name: 'project',
   entry: schema.entries,
   stats: {
-    assets: false,
     colors: true,
-    version: false,
     hash: false,
-    timings: false,
+    version: false,
+    timings: true,
+    assets: false,
     chunks: false,
-    chunkModules: false
+    modules: false,
+    reasons: false,
+    children: false,
+    source: false,
+    errors: true,
+    errorDetails: true,
+    warnings: true,
+    publicPath: false
+  },
+  performance: {
+    maxInitialChunkSize: 400000,
+    maxAssetSize: 400000,
   },
   devtool: 'eval',
   output: {
@@ -56,7 +65,10 @@ module.exports = [
   },
 
   resolve: {
-    modules: [path.join(__dirname, 'src'), path.join(__dirname, 'node_modules')],
+    modules: [
+      path.join(__dirname, 'src'),
+      path.join(__dirname, 'node_modules'),
+    ],
     extensions: ['.js', '.jsx'],
     mainFiles: ['index'],
   },
@@ -82,11 +94,35 @@ module.exports = [
         loader: 'file-loader?name=fonts/[name].[ext]'
       },
       {
-        test: /\.styl$/,
-        loader: ExtractTextPlugin.extract([
-          'css-loader?sourceMap&importLoaders=1',
-          'stylus-loader'
-        ])
+        test: /\.sa?c?ss$/,
+        loader: ExtractTextPlugin.extract({
+          loader: [
+            {
+              loader: 'css-loader',
+              query: {
+                sourceMap: true,
+                // importLoaders: 2
+              }
+            },
+            {
+              loader: 'postcss-loader'
+            },
+            {
+              loader: 'sass-loader',
+              query: {
+                sourceMap: true,
+                outputStyle: 'expanded',
+                data: '@import "global.sass"',
+                includePaths: [
+                  path.join(__dirname, 'node_modules'),
+                  path.join(__dirname, 'node_modules/bootstrap-sass/assets/stylesheets'),
+                  path.join(__dirname, 'src'),
+                  path.join(__dirname, 'src/styles'),
+                ]
+              }
+            },
+          ]
+        })
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -130,32 +166,26 @@ module.exports = [
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(['build/scripts/chunks'], { verbose: false }),
-    new webpack.LoaderOptionsPlugin({
-      test: /\.styl$/,
-      stylus: {
-        default: {
-          paths: [
-            path.join(__dirname, 'node_modules'),
-            path.join(__dirname, 'src'),
-            path.join(__dirname, 'src/styles'),
-          ],
-          use: [nib(), bootstrap()],
-          import: [
-            '~nib/lib/nib/index.styl',
-            path.join(__dirname, 'src/styles/configuration.styl'),
-            path.join(__dirname, 'src/styles/core.styl'),
-          ],
-          'resolve url': true,
-          'include css': true,
-          sourceMap: true,
-        },
-      },
-    }),
     new ExtractTextPlugin('styles/[name].css'),
   ],
 
   devServer: {
-    stats: { colors: true },
+    stats: {
+      colors: true,
+      hash: false,
+      version: false,
+      timings: true,
+      assets: false,
+      chunks: false,
+      modules: false,
+      reasons: true,
+      children: false,
+      source: false,
+      errors: true,
+      errorDetails: true,
+      warnings: true,
+      publicPath: false
+    },
     contentBase: [path.join(__dirname, 'build')],
     watchOptions: {
       watch: true,
@@ -174,7 +204,23 @@ module.exports = [
     'core/acme': './src/entries/core/acme.js',
     'bundle.legacy': './src/entries/legacy/bundle.legacy.js'
   },
-  stats: { colors: true },
+  stats: {
+    colors: true,
+    hash: false,
+    version: false,
+    timings: true,
+    assets: false,
+    chunks: false,
+    modules: false,
+    reasons: false,
+    children: false,
+    source: false,
+    errors: true,
+    errorDetails: true,
+    warnings: true,
+    publicPath: false
+  },
+  performance: { hints: false },
   devtool: 'none',
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -227,7 +273,7 @@ module.exports = [
       loader: 'json-loader'
     },
     {
-      test: /\.(pug|styl|css|jpe?g|png|gif)$/,
+      test: /\.(pug|sa?c?ss|styl|css|jpe?g|png|gif)$/,
       use: [{
         loader: 'null-loader'
       }],

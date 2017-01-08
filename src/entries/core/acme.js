@@ -10,7 +10,7 @@ const { scriptBasePath, resources } = require('../resources.json');
  * check that browser supports basic ES6
  * @return {Boolean}
  */
-const isSupportsBasicES6 = function () {
+const isSupportsBasicES6 = function isSupportsBasicES6 () {
   "use strict";
 
   try { eval("let foo = (x)=>x+1"); }
@@ -22,7 +22,7 @@ const isSupportsBasicES6 = function () {
  * check that browser supports param destructing
  * @return {Boolean}
  */
-const isSupportsDefaultParamsDestructing = function () {
+const isSupportsDefaultParamsDestructing = function isSupportsDefaultParamsDestructing () {
     "use strict";
 
     try {

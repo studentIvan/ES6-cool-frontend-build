@@ -1,0 +1,19 @@
+@import '~normalize.css/normalize.css'
+@import '../../styles/bootstrap.scss'
+@import './test.css'
+
+// simple BEM example
+.test
+  width: 284.3px
+  height: 426.6px
+  
+  &--highlighted
+    background-image: url('../../images/nicely.jpg');
+    background-size: 284.3px 426.6px
+    margin: 10px
+  
+  &__element
+    display: block
+      
+    &--highlighted
+      display: block

@@ -2,8 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const schema = require('./src/entries/schema');
 const package = require('./package');
-const bootstrap = require('bootstrap-styl');
-const nib = require('nib');
 
 /* webpack plugins classes */
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -77,11 +75,37 @@ module.exports = [
         ]
       },
       {
-        test: /\.styl$/,
-        loader: ExtractTextPlugin.extract([
-          'css-loader?minimize&importLoaders=1',
-          'stylus-loader'
-        ])
+        test: /\.sa?c?ss$/,
+        loader: ExtractTextPlugin.extract({
+          loader: [
+            {
+              loader: 'css-loader',
+              query: {
+                minimize: true,
+                // importLoaders: 2,
+                discardComments: {
+                  removeAll: true
+                }
+              }
+            },
+            {
+              loader: 'postcss-loader'
+            },
+            {
+              loader: 'sass-loader',
+              query: {
+                outputStyle: 'compressed',
+                data: '@import "global.sass"',
+                includePaths: [
+                  path.join(__dirname, 'node_modules'),
+                  path.join(__dirname, 'node_modules/bootstrap-sass/assets/stylesheets'),
+                  path.join(__dirname, 'src'),
+                  path.join(__dirname, 'src/styles'),
+                ]
+              }
+            },
+          ]
+        })
       },
       {
         test: /\.pug$/,
@@ -117,26 +141,6 @@ module.exports = [
   },
 
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      test: /\.styl$/,
-      stylus: {
-        default: {
-          paths: [
-            path.join(__dirname, 'node_modules'),
-            path.join(__dirname, 'src'),
-            path.join(__dirname, 'src/styles'),
-          ],
-          use: [nib(), bootstrap()],
-          import: [
-            '~nib/lib/nib/index.styl',
-            path.join(__dirname, 'src/styles/configuration.styl'),
-            path.join(__dirname, 'src/styles/core.styl'),
-          ],
-          'resolve url': true,
-          'include css': true
-        },
-      },
-    }),
     new ExtractTextPlugin('styles/[name].css'),
     new webpack.DefinePlugin({
       'process.env': {
@@ -213,7 +217,7 @@ module.exports = [
       loader: 'json-loader'
     },
     {
-      test: /\.(pug|styl|css|jpe?g|png|gif)$/,
+      test: /\.(pug|sa?c?ss|styl|css|jpe?g|png|gif)$/,
       use: [{
         loader: 'null-loader'
       }],

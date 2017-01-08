@@ -5,10 +5,10 @@
       "path": ".",
       "folder_exclude_patterns":
       [
-        "node_modules"
+        // "node_modules"
       ],
       "file_exclude_patterns": [
-        "*.editorconfig",
+        // "*.editorconfig",
         "*.eslintrc",
         "*.nvmrc",
         "*.DS_Store"

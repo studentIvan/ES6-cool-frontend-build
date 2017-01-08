@@ -10,7 +10,7 @@ Using technologies:
 Including:
 
 * pug - https://pugjs.org/api/getting-started.html
-* stylus with nib - http://stylus-lang.com/
+* SASS/SCSS + PostCSS
 * eslint with airbnb-config-base - http://eslint.org/
 * uglify-js 2 with harmony support
 
@@ -85,3 +85,4 @@ html
 Probably you should install the babel and the webpack 2 global - please read the websites for more information.
 
 JS coding styleguide https://github.com/airbnb/javascript/ 
+You can configure supported browsers using https://github.com/ai/browserslist#queries and package.json
