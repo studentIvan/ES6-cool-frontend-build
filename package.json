@@ -6,7 +6,9 @@
     "start": "webpack-dev-server --host 0.0.0.0 --config webpack.config.slim.js",
     "build": "webpack --config webpack.config.production.js",
     "build-dev": "webpack --config webpack.config.devbuild.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pretest": "cp .testbabelrc .babelrc",
+    "test": "babel-tape-runner src/**/*.spec.js | tap-summary",
+    "posttest": "rm .babelrc"
   },
   "author": "studentivan.ru",
   "license": "MIT",
@@ -34,6 +36,7 @@
     "exports-loader": "^0.6.3",
     "extract-loader": "0.0.2",
     "extract-text-webpack-plugin": "^2.0.0-beta.4",
+    "faker": "^3.1.0",
     "file-loader": "^0.9.0",
     "html-loader": "^0.4.4",
     "image-webpack-loader": "^3.0.0",
@@ -48,6 +51,7 @@
     "pug-runtime": "^2.0.2",
     "resolve-url-loader": "^1.6.1",
     "sass-loader": "^4.1.1",
+    "tape": "^4.6.3",
     "uglify-js": "mishoo/UglifyJS2#harmony",
     "uglify-loader": "^1.3.0",
     "url-loader": "^0.5.7",

@@ -14,6 +14,11 @@ Including:
 * eslint with airbnb-config-base - http://eslint.org/
 * uglify-js 2 with harmony support
 
+Testing:
+
+* `npm install -g babel-tape-runner tap-summary`
+* `npm test`
+
 Features:
 
 * lightweight compilation
